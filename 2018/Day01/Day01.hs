@@ -8,3 +8,6 @@ stripPlus x = x
 calibrate :: (Num a, Read a) => [String] -> a
 calibrate = sum . map read . map stripPlus
 
+findFirstDuplicate :: (Num a, Read a) => [String] -> a
+findFirstDuplicate x = 0
+

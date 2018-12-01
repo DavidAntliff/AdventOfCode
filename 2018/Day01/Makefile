@@ -1,4 +1,10 @@
-all: test
+all: test Day01 Day01b
+
+Day01: Day01.hs Main.hs
+	ghc -o $@ $^
+
+Day01b: Day01.hs Main_b.hs
+	ghc -o $@ $^
 
 test: format
 	cabal test
