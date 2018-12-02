@@ -1,9 +1,9 @@
-all: test Day01 Day01b
+all: test Day01Part1 Day01Part2
 
-Day01: Day01.hs Main.hs
+Day01Part1: Day01.hs MainPart1.hs
 	ghc -o $@ $^
 
-Day01b: Day01.hs Main_b.hs
+Day01Part2: Day01.hs MainPart2.hs
 	ghc -o $@ $^
 
 test: format

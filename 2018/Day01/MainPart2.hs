@@ -1,6 +1,6 @@
 module Main where
-
 import Day01 (findFirstDuplicate)
+
 
 main = interact sumFile
   where
