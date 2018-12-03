@@ -1,4 +1,4 @@
-import Day02 (getCounts, record, histogram, hammingDistance)
+import Day02 (getCounts, record, histogram, hammingDistance, compareHead)
 import Test.Tasty (defaultMain, testGroup)
 import Test.Tasty.HUnit (assertEqual, testCase)
 import qualified Data.Map as Map
@@ -11,7 +11,9 @@ unitTests =
     [record1, record2, record3,
      histogram1, histogram2,
      ex1, ex2, ex3, ex4, ex5, ex6, ex7,
-     hammingDistance1, hammingDistance2, hammingDistance3, hammingDistance4, hammingDistance5, hammingDistance6, hammingDistance7]
+     hammingDistance1, hammingDistance2, hammingDistance3,
+     hammingDistance4, hammingDistance5, hammingDistance6, hammingDistance7,
+     compareHead1, compareHead2]
 
 -- Part 1
 
@@ -60,3 +62,12 @@ hammingDistance6 =
 
 hammingDistance7 =
   testCase "Calculate hamming distance" $ assertEqual [] (Just 0) (hammingDistance "" "")
+
+compareHead1 =
+  testCase "Compare head with tail for distance 1" $ assertEqual [] Nothing (compareHead ["abc", "def", "acb", "aab", "gbd", "acf" ])
+
+compareHead2 =
+  testCase "Compare head with tail for distance 1" $ assertEqual [] (Just "abd") (compareHead ["abc", "def", "acb", "aab", "abd", "acf" ])
+
+  
+

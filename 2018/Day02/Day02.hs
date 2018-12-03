@@ -55,13 +55,28 @@ checkSum x = (sum $ fst $ uzc) * (sum $ snd $ uzc)
 
 
 -- findPair - given a list of strings, find the two with hamming distance exactly 1
-findPair :: [String] -> (String, String)
-findPair t = ("", "")
+findPair :: [String] -> Maybe (String, String)
+findPair [] = Nothing
+findPair (x:xs)
+  | result /= Nothing = Just (x, case result of Just a -> a)
+  | otherwise = findPair xs
+  where result = compareHead (x:xs)
 
--- compareHead - given a list of strings, compare the head against every element in the tail
--- if found, return Just String, otherwise return Nothing
+
+findCommon :: Maybe (String, String) -> Maybe String
+findCommon x = case x of Nothing -> Nothing
+                         Just (i, j) -> Just $ map fst $ filter (\(a, b) -> a == b) $ zip i j
+
+
+-- compareHead - given a list of strings, calculate the hamming distance between the head and every item in the tail.
+-- if a hamming distance of 1 is found, return Just match, otherwise return Nothing.
 compareHead :: [String] -> Maybe String
-compareHead x = Nothing
+compareHead [] = Nothing
+compareHead [x] = Nothing
+compareHead (x:xs)
+  | result /= [] = Just (head result)
+  | otherwise = Nothing
+  where result = take 1 $ filter (\a -> hammingDistance x a == Just 1) xs
 
 
 hammingDistance :: String -> String -> Maybe Integer
@@ -70,4 +85,6 @@ hammingDistance x y
   | otherwise = Just $ toInteger $ sum [ fromEnum (el1 /= el2) | (el1, el2) <- zip x y ]
 -- Nice alternative:
 --  | otherwise = (Just .) . (toInteger .) . (sum .) .  zipWith ((fromEnum .) . (/=))
+
+
 

@@ -1,6 +1,6 @@
 module Main where
-import Day02 (findPair)
+import Day02 (findPair, findCommon)
 
 main = interact sumFile
   where
-    sumFile = show . findPair . lines
+    sumFile = show . findCommon . findPair . lines
