@@ -1,4 +1,4 @@
-import Day02 (getCounts, record, histogram)
+import Day02 (getCounts, record, histogram, hammingDistance)
 import Test.Tasty (defaultMain, testGroup)
 import Test.Tasty.HUnit (assertEqual, testCase)
 import qualified Data.Map as Map
@@ -10,7 +10,8 @@ unitTests =
     "Unit tests"
     [record1, record2, record3,
      histogram1, histogram2,
-     ex1, ex2, ex3, ex4, ex5, ex6, ex7]
+     ex1, ex2, ex3, ex4, ex5, ex6, ex7,
+     hammingDistance1, hammingDistance2, hammingDistance3, hammingDistance4, hammingDistance5, hammingDistance6, hammingDistance7]
 
 -- Part 1
 
@@ -39,3 +40,23 @@ ex7 = testCase "Part 1 Example Case 1" $ assertEqual [] (0, 1) (getCounts "ababa
 
 -- Part 2
 
+hammingDistance1 =
+  testCase "Calculate hamming distance" $ assertEqual [] (Just 0) (hammingDistance "abcdef" "abcdef")
+
+hammingDistance2 =
+  testCase "Calculate hamming distance" $ assertEqual [] (Just 1) (hammingDistance "abcdef" "abczef")
+
+hammingDistance3 =
+  testCase "Calculate hamming distance" $ assertEqual [] (Just 3) (hammingDistance "aycdeg" "abczef")
+
+hammingDistance4 =
+  testCase "Calculate hamming distance" $ assertEqual [] (Just 6) (hammingDistance "abcdef" "ghijkl")
+
+hammingDistance5 =
+  testCase "Calculate hamming distance" $ assertEqual [] Nothing (hammingDistance "abcde" "abcdef")
+
+hammingDistance6 =
+  testCase "Calculate hamming distance" $ assertEqual [] Nothing (hammingDistance "abcde" "")
+
+hammingDistance7 =
+  testCase "Calculate hamming distance" $ assertEqual [] (Just 0) (hammingDistance "" "")

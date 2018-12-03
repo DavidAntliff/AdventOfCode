@@ -1,6 +1,6 @@
 module Main where
-import Day02 ()
+import Day02 (findPair)
 
 main = interact sumFile
   where
-    sumFile = show . id . lines
+    sumFile = show . findPair . lines

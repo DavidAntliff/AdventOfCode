@@ -43,3 +43,31 @@ checkSum :: [String] -> Integer
 checkSum x = (sum $ fst $ uzc) * (sum $ snd $ uzc)
   where counts = map getCounts x
         uzc = unzip counts
+
+
+-- Part 2
+
+-- Find hamming distance between each pair of strings, looking for the one
+-- with a distance of exactly 1.
+--
+-- Naive approach: for each head of string list, compare with every item in tail,
+-- terminating comparison as soon as two characters differ.
+
+
+-- findPair - given a list of strings, find the two with hamming distance exactly 1
+findPair :: [String] -> (String, String)
+findPair t = ("", "")
+
+-- compareHead - given a list of strings, compare the head against every element in the tail
+-- if found, return Just String, otherwise return Nothing
+compareHead :: [String] -> Maybe String
+compareHead x = Nothing
+
+
+hammingDistance :: String -> String -> Maybe Integer
+hammingDistance x y
+  | (length x) /= (length y) = Nothing
+  | otherwise = Just $ toInteger $ sum [ fromEnum (el1 /= el2) | (el1, el2) <- zip x y ]
+-- Nice alternative:
+--  | otherwise = (Just .) . (toInteger .) . (sum .) .  zipWith ((fromEnum .) . (/=))
+
