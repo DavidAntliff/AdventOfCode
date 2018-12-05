@@ -1,6 +1,8 @@
 module Day03 where
 import Data.Ord as Ord
 import qualified Data.List
+import Text.ParserCombinators.Parsec
+import Control.Monad (void)
 
 -- Part 1
 --
@@ -46,3 +48,28 @@ instance Ord Claim where
 sortClaims :: [Claim] -> [Claim]
 sortClaims = Data.List.sort
 
+
+
+--testParse :: [String] -> [String]
+--testParse = map (++ "y")
+
+claimParser :: Parser Claim
+claimParser = do
+  void $ char '#'
+  id <- many1 digit
+  void $ string " @ "
+  x <- many1 digit
+  void $ char ','
+  y <- many1 digit
+  void $ string ": "
+  w <- many1 digit
+  void $ char 'x'
+  h <- many1 digit
+  return (Claim (read id) (read x) (read y) (read w) (read h))
+
+
+parseClaim :: String -> Either ParseError Claim
+parseClaim x = parse claimParser "" x
+
+testParse :: [String] -> [Either ParseError Claim]
+testParse = map parseClaim
