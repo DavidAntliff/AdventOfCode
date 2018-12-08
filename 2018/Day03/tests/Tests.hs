@@ -1,4 +1,4 @@
-import Day03 (Claim (Claim), sortClaims)
+import Day03 (Claim (Claim), sortClaims, parseClaim)
 import Test.Tasty (defaultMain, testGroup)
 import Test.Tasty.HUnit (assertEqual, assertBool, testCase)
 import qualified Data.Map as Map
@@ -27,7 +27,12 @@ testClaimOrd2 = testCase "Test claim ordering" $ assertBool [] (Claim 1 0 0 1 1 
 testClaimOrd3 = testCase "Test claim ordering" $ assertBool [] (Claim 1 1 0 1 1 < Claim 1 0 1 1 1)
 
 testSort1 =
-  testCase "Test sort claims 1" $ assertEqual []
+  testCase "Test sort claims" $ assertEqual []
     [Claim 1 1 1 1 1, Claim 19 3 3 4 2, Claim 17 4 3 8 10, Claim 21 3 4 12 1, Claim 23 4 4 1 1, Claim 15 0 5 6 6]
     (sortClaims [Claim 19 3 3 4 2, Claim 15 0 5 6 6, Claim 17 4 3 8 10, Claim 1 1 1 1 1, Claim 21 3 4 12 1, Claim 23 4 4 1 1])
 
+testParseClaim1 =
+  testCase "Test parse claim" $ assertEqual [] (Right (Claim 4 6 7 3 2)) (parseClaim "#4 @ 6,7: 3x2")
+
+testParseClaim2 =
+  testCase "Test parse claim" $ assertEqual [] (Right (Claim 34 61 79 113 22)) (parseClaim "#34 @ 61,79: 113x22")
