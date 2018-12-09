@@ -5,7 +5,7 @@ TARGETS:=$(addprefix Day$(DAY)Part, $(PARTS))
 
 all: test $(TARGETS)
 
-$(TARGETS): Day$(DAY)Part%: MainPart%.hs Day$(DAY).hs
+$(TARGETS): Day$(DAY)Part%: Claim.hs MainPart%.hs Day$(DAY).hs
 	ghc -o $@ $^
 
 #Day01Part1: Day01.hs MainPart1.hs

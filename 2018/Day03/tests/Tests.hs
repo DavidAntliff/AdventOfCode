@@ -1,4 +1,5 @@
-import Day03 (Claim (Claim), sortClaims, parseClaim)
+import Day03 -- (sortClaims, parseClaim, addClaim)
+import Claim
 import Test.Tasty (defaultMain, testGroup)
 import Test.Tasty.HUnit (assertEqual, assertBool, testCase)
 import qualified Data.Map as Map
@@ -10,7 +11,12 @@ unitTests =
     "Unit tests"
     [ testClaimEq1, testClaimEq2, testClaimEq3, testClaimEq4, testClaimEq5
     , testClaimOrd1, testClaimOrd2, testClaimOrd3
-    , testSort1]
+    , testSort1
+    , testAddClaim1, testAddClaim2, testAddClaim3
+    , testColumnView1, testColumnView2, testColumnView3, testColumnView4
+    , testCombineViews1
+    , testCountOverlaps1, testCountOverlaps2
+    ]
 
 -- Part 1
 
@@ -36,3 +42,52 @@ testParseClaim1 =
 
 testParseClaim2 =
   testCase "Test parse claim" $ assertEqual [] (Right (Claim 34 61 79 113 22)) (parseClaim "#34 @ 61,79: 113x22")
+
+
+testAddClaim1 = testCase "Test add claim" $ assertEqual []
+                (Map.fromList [(0, [1])])
+                (addClaim Map.empty (\c -> x c) (\c -> w c) (Claim 1 0 0 1 1))
+
+testAddClaim2 = testCase "Test add claim" $ assertEqual []
+                (Map.fromList [(2, [1]), (3, [1]), (4, [1]), (5,[1])])
+                (addClaim Map.empty (\c -> x c) (\c -> w c) (Claim 1 2 3 4 5))
+
+testAddClaim3 = let init_map = Map.fromList [(0,[7]), (1,[7]), (5,[8,9]), (6,[8,10])]
+                in testCase "Test add claim" $ assertEqual []
+                   (Map.fromList [(0,[7]), (1,[7]),
+                                  (3, [1]), (4, [1]), (5,[8,9,1]), (6,[8,10,1]),
+                                  (7,[1])])
+                   (addClaim init_map (\c -> x c) (\c -> w c) (Claim 1 3 2 5 4))
+
+testColumnView1 = testCase "Test compute column view" $ assertEqual []
+                  (Map.fromList [(0,[1]), (1,[1])])
+                  (columnView [Claim 1 0 0 2 2])
+
+testColumnView2 = testCase "Test compute column view" $ assertEqual []
+                  (Map.fromList [(0,[1]), (1,[1]), (4,[2]), (5,[2])])
+                  (columnView [Claim 1 0 0 2 2, Claim 2 4 0 2 2])
+
+testColumnView3 = testCase "Test compute column view" $ assertEqual []
+                  (Map.fromList [(0,[1]), (1,[1]), (2, [3]), (3, [3]), (4,[2]), (5,[2])])
+                  (columnView [Claim 1 0 0 2 2, Claim 2 4 0 2 2, Claim 3 2 2 2 2])
+
+testColumnView4 = testCase "Test compute column view" $ assertEqual []
+                  (Map.fromList [(0,[1]), (1,[1,4]), (2, [3,4]), (3, [3,4]), (4,[2,4]), (5,[2])])
+                  (columnView [Claim 1 0 0 2 2, Claim 2 4 0 2 2, Claim 3 2 2 2 2, Claim 4 1 5 4 2])
+
+testCombineViews1 = let claims = [Claim 1 2 2 2 2]
+                        row_view = rowView claims
+                        col_view = columnView claims
+                    in testCase "Test combine views" $ assertEqual []
+                       [((2,2), [1]), ((2,3), [1]), ((3,2), [1]), ((3,3), [1])]
+                       (combineViews col_view row_view)
+
+testCountOverlaps1 = let claims = ["#1 @ 0,0: 2x2", "#2 @ 2,2: 2x2"]
+                    in testCase "Test count overlaps" $ assertEqual []
+                       0
+                       (countOverlaps claims)
+
+testCountOverlaps2 = let claims = ["#1 @ 0,0: 2x2", "#2 @ 1,1: 2x2"]
+                    in testCase "Test count overlaps" $ assertEqual []
+                       1
+                       (countOverlaps claims)

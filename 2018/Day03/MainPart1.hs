@@ -1,6 +1,6 @@
 module Main where
-import Day03 (testParse)
+import Day03 (countOverlaps)
 
 main = interact sumFile
   where
-    sumFile = show . testParse . lines
+    sumFile = show . countOverlaps . lines
