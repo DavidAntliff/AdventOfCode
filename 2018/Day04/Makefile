@@ -4,7 +4,7 @@ PARTS:=1 #2
 TARGETS:=$(addprefix Day$(DAY)Part, $(PARTS))
 
 # Add any local modules required here
-MODULES:=
+MODULES:= Record.hs
 
 all: test $(TARGETS)
 
