@@ -8,6 +8,7 @@ Library
   Build-Depends:    base >= 3 && < 5
                   , containers
                   , parsec
+                  , split
 
 Test-Suite test-day04
   type:             exitcode-stdio-1.0

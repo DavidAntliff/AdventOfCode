@@ -1,6 +1,6 @@
 module Main where
-import Day04 ()
+import Day04
 
 main = interact sumFile
   where
-    sumFile = show . id . lines
+    sumFile = show . calcLongestSleeper . splitRecords . sortRecords . parseRecords . lines

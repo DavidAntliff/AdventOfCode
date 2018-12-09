@@ -7,13 +7,13 @@ data DateTime = DateTime { year :: Integer
                          , day :: Integer
                          , hour :: Integer
                          , minute :: Integer
-                         } deriving (Show, Eq)
+                         } deriving (Show, Eq, Ord)
 
-data Event = Begin Integer | Sleep | Wake deriving (Show, Eq)
+data Event = Begin Integer | Sleep | Wake deriving (Show, Eq, Ord)
 
 data Record = Record { datetime :: DateTime
                      , event :: Event
-                     } deriving (Show, Eq)
+                     } deriving (Show, Eq, Ord)
 
 
 -- http://jakewheat.github.io/intro_to_parsing/#_lexeme
