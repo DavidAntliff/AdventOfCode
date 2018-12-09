@@ -3,6 +3,7 @@ import Claim
 import Test.Tasty (defaultMain, testGroup)
 import Test.Tasty.HUnit (assertEqual, assertBool, testCase)
 import qualified Data.Map as Map
+import qualified Data.Set as Set
 
 main = defaultMain unitTests
 
@@ -83,11 +84,11 @@ testCombineViews1 = let claims = [Claim 1 2 2 2 2]
                        (combineViews col_view row_view)
 
 testCountOverlaps1 = let claims = ["#1 @ 0,0: 2x2", "#2 @ 2,2: 2x2"]
-                    in testCase "Test count overlaps" $ assertEqual []
-                       0
-                       (countOverlaps claims)
+                     in testCase "Test count overlaps" $ assertEqual []
+                        (0, Set.fromList [1, 2])
+                        (countOverlaps claims)
 
 testCountOverlaps2 = let claims = ["#1 @ 0,0: 2x2", "#2 @ 1,1: 2x2"]
-                    in testCase "Test count overlaps" $ assertEqual []
-                       1
-                       (countOverlaps claims)
+                     in testCase "Test count overlaps" $ assertEqual []
+                        (1, Set.fromList [])
+                        (countOverlaps claims)

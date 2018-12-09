@@ -2,6 +2,7 @@ module Day03 where
 import Data.Ord as Ord
 import qualified Data.List as List
 import qualified Data.Map as Map
+import qualified Data.Set as Set
 import qualified Data.Either as Either
 import Text.ParserCombinators.Parsec
 import Control.Monad (void)
@@ -105,11 +106,15 @@ combineViews column_view row_view =
   in [ buildCell x | x <- cart_prod ]
 
 
-countOverlaps :: [String] -> Integer
+findOverlappingClaims :: [((Integer, Integer), [Integer])] -> [Integer]
+findOverlappingClaims x = List.foldr (++) [] (List.filter (\x -> length x >= 2) $ List.map (\((x,y),li) -> li) x)
+
+countOverlaps :: [String] -> (Integer, Set.Set Integer)
 countOverlaps lines =
   let claims = parseClaims lines
       row_view = rowView claims
       col_view = columnView claims
       combined_view = combineViews col_view row_view
-  in toInteger $ length $ filter (>=2) $ map (\((_, _), ids) -> toInteger $ length ids) combined_view
+      non_overlapping_claims = Set.difference (Set.fromList $ map (\x -> Claim.id x) claims) (Set.fromList $ findOverlappingClaims combined_view)
+  in (toInteger $ length $ filter (>=2) $ map (\((_, _), ids) -> toInteger $ length ids) combined_view, non_overlapping_claims)
 
