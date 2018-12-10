@@ -12,6 +12,7 @@ unitTests =
     , testSplitRecords1
     , testCalcShift1
     , testCalcSleepTime1
+    , testMakeShiftVector1
     ]
 
 -- Part 1
@@ -60,3 +61,11 @@ testCalcSleepTime1 = testCase "Test calc sleep time" $ assertEqual []
                                      Record {datetime = DateTime {year = 1518, month = 2, day = 11, hour = 0, minute = 39}, event = Wake},
                                      Record {datetime = DateTime {year = 1518, month = 2, day = 11, hour = 0, minute = 53}, event = Sleep},
                                      Record {datetime = DateTime {year = 1518, month = 2, day = 11, hour = 0, minute = 59}, event = Wake}])
+
+testMakeShiftVector1 = testCase "Test make shift sleep vector" $ assertEqual []
+                       [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,0]
+                       (makeShiftVector [Record {datetime = DateTime {year = 1518, month = 2, day = 11, hour = 0, minute = 0}, event = Begin 347},
+                                         Record {datetime = DateTime {year = 1518, month = 2, day = 11, hour = 0, minute = 35}, event = Sleep},
+                                         Record {datetime = DateTime {year = 1518, month = 2, day = 11, hour = 0, minute = 39}, event = Wake},
+                                         Record {datetime = DateTime {year = 1518, month = 2, day = 11, hour = 0, minute = 53}, event = Sleep},
+                                         Record {datetime = DateTime {year = 1518, month = 2, day = 11, hour = 0, minute = 59}, event = Wake}])

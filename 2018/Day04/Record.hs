@@ -74,3 +74,12 @@ parseRecord str = case parse recordParser "" str of
   Left err -> error $ "parse error at " ++ (show err)
   Right val -> val
 
+
+isBegin :: Event -> Bool
+isBegin Begin{} = True
+isBegin _ = False
+
+
+fromBegin :: Event -> Integer
+fromBegin (Begin x) = x
+
