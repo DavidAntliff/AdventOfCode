@@ -1,5 +1,5 @@
 DAY:=05
-PARTS:=1 #2
+PARTS:=1 2
 
 TARGETS:=$(addprefix Day$(DAY)Part, $(PARTS))
 
