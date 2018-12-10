@@ -9,7 +9,7 @@ unitTests =
     "Unit tests"
     [
       testReact1, testReact2, testReact3, testReact4, testReact5, testReact6, testReact7, testReact8
-    , testStartReact1
+    , testStartReact1, testStartReact2
     ]
 
 -- Part 1
@@ -32,5 +32,6 @@ testReact7 = testCase "Test react" $ assertEqual [] "bb" (react "aAbbcC")
 
 testReact8 = testCase "Test react" $ assertEqual [] "bB" (react "baAcCB")
 
-testStartReact1 = testCase "Test start react" $ assertEqual [] "" (react "baAcCB")
+testStartReact1 = testCase "Test start react" $ assertEqual [] "" (startReact "baAcCB")
 
+testStartReact2 = testCase "Test start react" $ assertEqual [] "" (startReact "DbaAcCBd")
