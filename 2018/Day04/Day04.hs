@@ -76,11 +76,12 @@ addShifts (x:xs) acc =
   in addShifts xs (addShift x guard_id acc)
 
 
+keyForMaxValueFromMap :: Ord a => Map.Map k a -> [k]
 keyForMaxValueFromMap xs = Map.keys $ Map.filter (== m) xs
   where m = maximum $ Map.elems xs
 
 
-calcLongestSleeper :: [[Record]] -> Integer
+calcLongestSleeper :: [[Record]] -> (Integer, Integer)
 calcLongestSleeper shifts =
   let shift_vector_by_guard = addShifts shifts Map.empty
       sleep_total_by_guard = Map.map (\x -> sum x) shift_vector_by_guard
@@ -88,5 +89,20 @@ calcLongestSleeper shifts =
       sleepiest_guard_vector = fromJust $ Map.lookup sleepiest_guard_id shift_vector_by_guard
       max_sleep = maximum sleepiest_guard_vector
       max_sleep_minute = toInteger $ fromJust $ List.elemIndex max_sleep sleepiest_guard_vector
-  in sleepiest_guard_id * max_sleep_minute
+      -- part 2
+      (frequent_guard_id, frequent_minute) = mostFrequentMinute shift_vector_by_guard
+  in (sleepiest_guard_id * max_sleep_minute, frequent_guard_id * frequent_minute)
+
+
+-- Part 2
+-- Determine the guard who slept the longest for any minute and return the guard's ID and the minute
+mostFrequentMinute :: Map.Map Integer [Integer] -> (Integer, Integer)
+mostFrequentMinute shift_vector =
+  let frequent_guard_id = keyForMaxValueFromMap shift_vector !! 0
+      frequent_guard_vector = fromJust $ Map.lookup frequent_guard_id shift_vector
+      frequent_minute_max = maximum $ frequent_guard_vector
+      frequent_minute = toInteger $ fromJust $ List.elemIndex frequent_minute_max frequent_guard_vector
+  in (frequent_guard_id, frequent_minute)
+
+
 
