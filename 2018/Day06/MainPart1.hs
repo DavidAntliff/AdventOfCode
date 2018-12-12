@@ -3,4 +3,4 @@ import Day06
 
 main = interact stdin
   where
-    stdin = show . id . lines
+    stdin = show . part1 . lines

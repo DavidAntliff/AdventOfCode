@@ -7,6 +7,7 @@ Library
   Exposed-Modules:  Day06
   Build-Depends:    base >= 3 && < 5
                   , containers
+                  , split
 
 Test-Suite test-day06
   type:             exitcode-stdio-1.0
