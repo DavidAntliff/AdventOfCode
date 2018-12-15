@@ -1,4 +1,7 @@
+-- NOT WORKING - COME BACK TO THIS ANOTHER TIME
+
 module Day06 where
+import Data.List
 import Data.List.Split
 import Data.Maybe
 import qualified Data.Map.Strict as Map
@@ -15,7 +18,7 @@ import qualified Data.Map.Strict as Map
 
 type AreaID = Integer
 
-data Coordinate = Coordinate { x :: Integer, y :: Integer } deriving Show
+data Coordinate = Coordinate { x :: Integer, y :: Integer } deriving (Ord, Eq, Show)
 
 type AliveSet = Map.Map Coordinate AreaID
 
@@ -29,22 +32,62 @@ parseCoordinate (x:y:_) = Just $ Coordinate (read x :: Integer) (read y :: Integ
 parseCoordinate _ = Nothing
 
 
-iterateGrid :: Grid -> AliveSet -> (Grid, AliveSet)
-iterateGrid grid alive = (grid, alive)
+growOneCell :: (Grid, AliveSet) -> Coordinate -> AreaID -> (Grid, AliveSet)
+growOneCell (grid, alive) coord area_id =
 
 
-grow :: Grid -> AliveSet -> (Grid, AliveSet)
-grow grid alive
+  (Map.empty, Map.empty)
+
+
+-- iterate through each alive member, resulting in a new grid state and new alive set
+growOneGeneration :: (Grid, AliveSet) -> (Grid, AliveSet)
+growOneGeneration (grid, alive) = Map.foldlWithKey growOneCell (grid, alive) alive
+
+
+-- iterate through each generation
+iterateGrid :: (Grid, AliveSet) -> (Grid, AliveSet)
+iterateGrid (grid, alive)
   | Map.null alive = (grid, alive)
-  | otherwise =
-      let
-        (grid', alive') = iterateGrid grid alive
-      in grow grid' alive'
+  | otherwise = iterateGrid (growOneGeneration (grid, alive))
 
 
-findLargestArea :: [Coordinate] -> Integer
-findLargestArea x = 0
+-- grow :: Grid -> AliveSet -> Grid
+-- grow grid alive
+--   | Map.null alive = (grid, alive)
+--   | otherwise =
+--       let
+--         (grid', alive') = iterateGrid grid alive
+--       in grow grid' alive'
+
+
+valuesFrequency :: (Ord k1, Num a) => Map.Map k2 k1 -> Map.Map k1 a
+valuesFrequency = Map.foldl' (\mp x -> Map.insertWith (+) x 1 mp) Map.empty
+
+
+-- countAreas :: Grid -> [Integer]
+-- countAreas grid = valuesFrequency grid
+
+
+findLargestArea :: Grid -> AliveSet -> Integer
+findLargestArea grid alive =
+  let
+    final_grid = fst $ until (\(g, a) -> Map.null a) iterateGrid (grid, alive)
+  in maximum $ valuesFrequency final_grid
+
+parseInput :: [String] -> (Grid, AliveSet)
+parseInput xs =
+  let
+    coordinates = map fromJust . map parseCoordinate . map (splitOn ", ") $ xs
+    grid = Map.fromList (zip coordinates [1..])
+    alive = grid  -- initially, they are the same map
+  in (grid, alive)
 
 part1 :: [String] -> Integer
-part1 = findLargestArea . map fromJust . map parseCoordinate . map (splitOn ", ")
+--part1 = findLargestArea . map fromJust . map parseCoordinate . map (splitOn ", ")
+part1 = uncurry findLargestArea . parseInput
 
+
+
+
+-- s <- readFile "input.txt"
+-- (grid, alive) = parseInput $ lines s
