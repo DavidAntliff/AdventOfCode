@@ -1,0 +1,19 @@
+Name:               day07
+Version:            1.0.0
+cabal-version:      >= 1.8
+build-type:         Simple
+
+Library
+  Exposed-Modules:  Day07
+  Build-Depends:    base >= 3 && < 5
+                  , containers
+
+Test-Suite test-day07
+  type:             exitcode-stdio-1.0
+  hs-source-dirs:   tests
+  Main-is:          Tests.hs
+  Build-Depends:    base >= 3 && < 5
+                  , tasty
+                  , tasty-hunit
+                  , day07
+                  , containers
