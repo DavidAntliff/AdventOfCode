@@ -20,13 +20,14 @@ unitTests =
 
 
 testFgl1 = testCase "Test FGL" $ assertEqual []
-           (mkGraph [(1,'A'),(2,'B'),(3,'C'),(4,'D'),(5,'E'),(6,'F')] [(1,2,()),(1,4,()),(2,5,()),(3,1,()),(3,6,()),(4,5,()),(6,5,())])
+           (mkGraph [(0,'A'),(1,'B'),(2,'C'),(3,'D'),(4,'E'),(5,'F')]
+           [(0,1,()),(0,3,()),(1,4,()),(2,0,()),(2,5,()),(3,4,()),(5,4,())])
            genTestGraph
 
 testFindStartingNodes1 = testCase "Test findStartingNodes" $ assertEqual []
-           [3]
+           [2]
            (findStartingNodes genTestGraph)
 
 testKahnAlgorithm1 = testCase "Test kahnAlgorithm" $ assertEqual []
-           [3,1,2,4,6,5]
-           (kahnAlgorithm genTestGraph [3] [])
+           [2,0,1,3,5,4]
+           (kahnAlgorithm genTestGraph [2] [])
