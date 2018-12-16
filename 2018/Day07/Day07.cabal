@@ -7,6 +7,7 @@ Library
   Exposed-Modules:  Day07
   Build-Depends:    base >= 3 && < 5
                   , containers
+                  , fgl
 
 Test-Suite test-day07
   type:             exitcode-stdio-1.0
@@ -17,3 +18,4 @@ Test-Suite test-day07
                   , tasty-hunit
                   , day07
                   , containers
+                  , fgl
