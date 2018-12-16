@@ -1,5 +1,5 @@
 module Day07 where
-import Data.Graph.Inductive.Graph (Graph, mkGraph, indeg, nodes, suc, out)
+import Data.Graph.Inductive.Graph (Graph, mkGraph, indeg, nodes, suc, out, delLEdge)
 import Data.Graph.Inductive.PatriciaTree (Gr)
 import Data.List (sort)
 
@@ -8,30 +8,35 @@ part1 :: [String] -> String
 part1 xs = "TODO"
 
 
-newtype NodeLabel = NodeLabel Char
+type NodeLabel = Char
 type EdgeLabel = ()
 
 
 -- Kahn Algorithm - provide graph and "S" - list of starting nodes.
 -- Return the ordered list of traversal.
 -- Note that ties are broken by sorting on node labels.
-kahnAlgorithm :: (Graph gr, Num b1, Enum b1) => gr a b2 -> [b1] -> [b1] -> [b1]
+-- https://en.wikipedia.org/wiki/Topological_sorting#Kahn's_algorithm
+--kahnAlgorithm :: (Graph gr, Num b1, Enum b1) => gr a b2 -> [b1] -> [b1] -> [b1]
+kahnAlgorithm :: Gr NodeLabel EdgeLabel -> [Int] -> [Int] -> [Int]
 kahnAlgorithm _ [] l = l
 kahnAlgorithm graph s l =
   let s' = sort s
       n = head s'
       l' = l ++ [n]
       s'' = (tail s') ++ suc graph n
+      -- TODO: only append to s if each successor has no other incoming edges
       graph' = foldl (\acc x -> delLEdge x acc) graph (out graph n)
   in kahnAlgorithm graph' s'' l'
 
-findStartingNodes :: (Graph gr, Num b1, Enum b1) => gr a b2 -> [b1]
+--findStartingNodes :: (Graph gr, Num b1, Enum b1) => gr a b2 -> [b1]
+findStartingNodes :: Gr NodeLabel EdgeLabel -> [Int]
 findStartingNodes graph = map fst . filter (\(x, y) -> y == 0) $ zip [1..] $ map (indeg graph) (nodes graph)
 
-topologicalSort :: (Graph gr, Num b1, Enum b1) => gr a b2 -> [b1]
+--topologicalSort :: (Graph gr, Num b1, Enum b1) => gr a b2 -> [b1]
+topologicalSort :: Gr NodeLabel EdgeLabel -> [Int]
 topologicalSort graph = kahnAlgorithm graph [] $ findStartingNodes graph
 
-genTestGraph :: Gr Char ()
+genTestGraph :: Gr NodeLabel EdgeLabel
 genTestGraph = mkGraph (zip [1..] "ABCDEF") [(3,1,()),(3,6,()),(1,2,()),(1,4,()),(2,5,()),(4,5,()),(6,5,())]
 
 -- Given a graph:

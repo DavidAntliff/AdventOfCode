@@ -29,4 +29,4 @@ testFindStartingNodes1 = testCase "Test findStartingNodes" $ assertEqual []
 
 testKahnAlgorithm1 = testCase "Test kahnAlgorithm" $ assertEqual []
            [3,1,2,4,6,5]
-           (kahnAlgorithm genTestGraph [3])
+           (kahnAlgorithm genTestGraph [3] [])
