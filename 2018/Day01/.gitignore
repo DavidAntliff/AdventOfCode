@@ -1,2 +1,3 @@
-Day*Part1
-Day*Part2
+.stack-work/
+*.cabal
+*~
