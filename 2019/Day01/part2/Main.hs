@@ -1,5 +1,5 @@
 module Main where
 
-import Lib ()
+import Lib (sumFuel2)
 
-main = interact show
+main = interact $ show . sumFuel2 . lines
