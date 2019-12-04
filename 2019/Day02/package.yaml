@@ -1,6 +1,6 @@
 name:                Day02
 version:             0.1.0.0
-github:              "DavidAntliff/AdventOfCode/2018/DayXX"
+github:              "DavidAntliff/AdventOfCode/2019/Day02"
 license:             BSD3
 author:              "David Antliff"
 copyright:           "2019 David Antliff"
@@ -22,7 +22,7 @@ executables:
     - -rtsopts
     - -with-rtsopts=-N
     dependencies:
-    - DayXX
+    - Day02
 
   part2:
     main:                Main.hs
@@ -32,7 +32,7 @@ executables:
     - -rtsopts
     - -with-rtsopts=-N
     dependencies:
-    - DayXX
+    - Day02
 
 tests:
   test:
@@ -46,4 +46,4 @@ tests:
     - base
     - tasty
     - tasty-hunit
-    - DayXX
+    - Day02
