@@ -51,15 +51,47 @@ replace pos val mem =
   let (x, _:ys) = splitAt pos $ mem
   in x ++ val : ys
 
-restoreGravityAssist :: [Int] -> [Int]
-restoreGravityAssist m = replace 2 2 . replace 1 12 $ m
+restoreGravityAssist :: Program -> Program
+restoreGravityAssist p =
+  let mem = replace 2 2 . replace 1 12 $ memory p
+  in Program {memory=mem, counter=counter p}
 
 loadProgram :: [String] -> Program
 loadProgram s =
-  let
-    mem = restoreGravityAssist $ readInput $ s !! 0  -- single line of input
+  let mem = readInput $ s !! 0  -- single line of input
   in Program {memory=mem, counter=0}
 
 
 getValueAtPosition0 :: Program -> Int
 getValueAtPosition0 p = memory p !! 0
+
+
+-- Part 2
+
+
+installNounVerb :: Int -> Int -> Program -> Program
+installNounVerb n v p =
+  let mem = replace 2 v . replace 1 n $ memory p
+  in Program {memory=mem, counter=counter p}
+
+tryNounVerb :: Int -> Int -> Program -> Int
+tryNounVerb n v p = getValueAtPosition0 . runProgram $ installNounVerb n v p
+
+check :: (Int, Int, Int) -> Bool
+check (_, _, x) = x == 19690720
+
+calcNounVerb :: Int -> Int -> Program -> (Int, Int, Int)
+calcNounVerb n v p = (n, v, tryNounVerb n v p)
+
+findNounVerb :: Program -> (Int, Int, Int)
+findNounVerb p =
+  let nouns = [0..99]
+      verbs = [0..99]
+      space = [(n, v) | n <- nouns, v <- verbs]
+  in last $ takeUntil (check) [calcNounVerb (fst s) (snd s) p | s <- space]
+
+takeUntil :: Foldable t => (a -> Bool) -> t a -> [a]
+takeUntil p = foldr (\x r -> if (not (p x)) then (x:r) else [x]) []
+
+encode :: Num a => (a, a, b) -> a
+encode (n, v, _) = 100 * n + v

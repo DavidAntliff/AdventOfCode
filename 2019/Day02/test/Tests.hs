@@ -16,6 +16,7 @@ unitTests =
     , replaceTest2
     , replaceTest3
     , restoreGravityAssistTest
+    , takeUntilTest
     ]
 
 
@@ -61,5 +62,18 @@ replaceTest3 =
 
 restoreGravityAssistTest =
   testCase "restoreGravityAssist test" $ assertEqual []
-  [1,12,2,3,1,1,2,3,1,3,4]
-  (restoreGravityAssist [1,0,0,3,1,1,2,3,1,3,4])
+  (Program [1,12,2,3,1,1,2,3,1,3,4] 0)
+  (restoreGravityAssist $ Program [1,0,0,3,1,1,2,3,1,3,4] 0)
+
+
+-- Part 2
+
+installNounVerbTest =
+  testCase "installNounVerbTest test" $ assertEqual []
+  (Program [1, 13, 43, 0, 99] 0)
+  (installNounVerb 13 43 (Program [1, 0, 0, 0, 99] 0))
+
+takeUntilTest =
+  testCase "takeUntilTest" $ assertEqual []
+  [0, 1, 2, 3, 4]
+  (takeUntil (>= 4) [0..])
