@@ -6,6 +6,7 @@ import Data.List (sortBy, sort, intersect, elemIndex)
 import Data.Maybe (fromJust)
 import Linear.V2
 import qualified Data.Set as Set
+import qualified Data.Map as Map
 
 parseWirePath :: String -> [V2 Int]
 parseWirePath [] = [V2 0 0]
@@ -81,23 +82,18 @@ part1 ss =
 
 -- Part 2
 
-calcDistance :: [V2 Int] -> [V2 Int] -> V2 Int -> Int
-calcDistance c1 c2 c =
-  let d1 = fromJust $ elemIndex c c1
-      d2 = fromJust $ elemIndex c c2
-  in d1 + d2
+constructWireVisits2 :: [V2 Int] -> Map.Map (V2 Int) Int
+constructWireVisits2 wp = Map.fromListWith min $ flip zip [1..] $ walkPath (V2 0 0) wp
 
-calcDistances :: [V2 Int] -> [V2 Int] -> [V2 Int] -> [Int]
-calcDistances c1 c2 [] = []
-calcDistances c1 c2 (c:cs) = (calcDistance c1 c2 c) : (calcDistances c1 c2 cs)
+findCommonVisits2 :: Map.Map (V2 Int) Int -> Map.Map (V2 Int) Int -> Map.Map (V2 Int) Int
+findCommonVisits2 wv1 wv2 = Map.intersectionWith (+) wv1 wv2
 
 part2 :: [String] -> Int
 part2 ss =
   let wp1 = parseWirePath $ ss !! 0
       wp2 = parseWirePath $ ss !! 1
-      wv1 = constructWireVisits wp1
-      wv2 = constructWireVisits wp2
-      common = findCommonVisits wv1 wv2
-      distance = 0
-  in distance
+      wv1 = constructWireVisits2 wp1
+      wv2 = constructWireVisits2 wp2
+      common = findCommonVisits2 wv1 wv2
+  in minimum common
 
