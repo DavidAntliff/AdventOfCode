@@ -90,6 +90,8 @@ findNounVerb p =
       space = [(n, v) | n <- nouns, v <- verbs]
   in last $ takeUntil (check) [calcNounVerb (fst s) (snd s) p | s <- space]
 
+-- Construct list of items from a foldable until condition is true.
+-- Final list will contain the first true item.
 takeUntil :: Foldable t => (a -> Bool) -> t a -> [a]
 takeUntil p = foldr (\x r -> if (not (p x)) then (x:r) else [x]) []
 
