@@ -2,7 +2,10 @@
 
 module Lib where
 
-import Data.List (sortBy, intersect)
+import Data.List (sortBy, intersect, elemIndex)
+import Data.Maybe (fromJust)
+import Debug.Trace
+
 import Coordinate
 
 -- relative movement
@@ -72,10 +75,7 @@ sortWireVisits :: WireVisits -> WireVisits
 sortWireVisits wv = WireVisits { coordinates = sortBy (flip compareManhattanDistance) (coordinates wv) }
 
 findCommonVisits :: WireVisits -> WireVisits -> WireVisits
-findCommonVisits wv1 wv2 =
-  let swv1 = sortWireVisits wv1
-      swv2 = sortWireVisits wv2
-  in WireVisits { coordinates = intersect (coordinates swv1) (coordinates swv2) }
+findCommonVisits wv1 wv2 = WireVisits { coordinates = intersect (coordinates wv1) (coordinates wv2) }
 
 -- return the manhattan distance of the closest intersection
 part1 :: [String] -> Int
@@ -89,3 +89,31 @@ part1 ss =
       common = findCommonVisits swv1 swv2
   in manhattanDistance . head . coordinates $ common
 
+
+-- Part 2
+
+calcDistance :: [Coordinate] -> [Coordinate] -> Coordinate -> Int
+calcDistance c1 c2 c =
+  let d1 = fromJust $ elemIndex c c1
+      d2 = fromJust $ elemIndex c c2
+  in d1 + d2
+
+calcDistances :: [Coordinate] -> [Coordinate] -> [Coordinate] -> [Int]
+calcDistances c1 c2 [] = []
+calcDistances c1 c2 (c:cs) = (calcDistance c1 c2 c) : (calcDistances c1 c2 cs)
+
+part2 :: [String] -> Int
+part2 ss =
+  let wp1 = parseWirePath $ ss !! 0
+      wp2 = parseWirePath $ ss !! 1
+      wv1 = constructWireVisits wp1
+      wv2 = constructWireVisits wp2
+      swv1 = sortWireVisits wv1
+      swv2 = sortWireVisits wv2
+      common = findCommonVisits swv1 swv2
+      --f = trace ("common " ++ show (length $ coordinates $ common)) 0
+      distances = calcDistances (coordinates wv1) (coordinates wv2) $ coordinates common
+      distance = head . (sortBy (flip compare)) $ distances
+  in distance
+
+-- TODO - takes too long to run (12.5 minutes) and the answer is wrong
