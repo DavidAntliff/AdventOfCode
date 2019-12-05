@@ -48,4 +48,6 @@ tests:
     - tasty-hunit
     - Day03
     - linear
+    - containers
+
 

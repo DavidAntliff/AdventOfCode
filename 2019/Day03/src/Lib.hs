@@ -5,6 +5,7 @@ module Lib where
 import Data.List (sortBy, sort, intersect, elemIndex)
 import Data.Maybe (fromJust)
 import Linear.V2
+import qualified Data.Set as Set
 
 parseWirePath :: String -> [V2 Int]
 parseWirePath [] = [V2 0 0]
@@ -47,8 +48,8 @@ walkPath start (p:ps) =
       start' = last line
   in line ++ (walkPath start' ps)
 
-constructWireVisits :: [V2 Int] -> [V2 Int]
-constructWireVisits wp = walkPath (V2 0 0) wp
+constructWireVisits :: [V2 Int] -> Set.Set (V2 Int)
+constructWireVisits wp = Set.fromList $ walkPath (V2 0 0) wp
 
 manhattanDistance :: V2 Int -> Int
 manhattanDistance = sum . abs
@@ -61,11 +62,11 @@ compareManhattanDistance c1 c2
     d1 = manhattanDistance c1
     d2 = manhattanDistance c2
 
-sortWireVisits :: [V2 Int] -> [V2 Int]
-sortWireVisits wv = sortBy (flip compareManhattanDistance) wv
+sortWireVisits :: [V2 Int] -> Set.Set (V2 Int)
+sortWireVisits wv = Set.fromList $ sortBy (flip compareManhattanDistance) wv
 
-findCommonVisits :: [V2 Int] -> [V2 Int] -> [V2 Int]
-findCommonVisits wv1 wv2 = intersect wv1 wv2
+findCommonVisits :: Set.Set (V2 Int) -> Set.Set (V2 Int) -> Set.Set (V2 Int)
+findCommonVisits wv1 wv2 = Set.intersection wv1 wv2
 
 -- return the manhattan distance of the closest intersection
 part1 :: [String] -> Int
@@ -74,10 +75,8 @@ part1 ss =
       wp2 = parseWirePath $ ss !! 1
       wv1 = constructWireVisits wp1
       wv2 = constructWireVisits wp2
-      swv1 = sortWireVisits wv1
-      swv2 = sortWireVisits wv2
-      common = findCommonVisits swv1 swv2
-  in manhattanDistance . head $ common
+      common = findCommonVisits wv1 wv2
+  in minimum $ Set.map manhattanDistance common
 
 
 -- Part 2
@@ -98,11 +97,7 @@ part2 ss =
       wp2 = parseWirePath $ ss !! 1
       wv1 = constructWireVisits wp1
       wv2 = constructWireVisits wp2
-      swv1 = sortWireVisits wv1
-      swv2 = sortWireVisits wv2
-      common = findCommonVisits swv1 swv2
-      --f = trace ("common " ++ show (length $ coordinates $ common)) 0
-      distances = calcDistances wv1 wv2 common
-      distance = head . sort $ distances
+      common = findCommonVisits wv1 wv2
+      distance = 0
   in distance
 

@@ -2,6 +2,7 @@
 
 import Lib
 import Linear.V2
+import qualified Data.Set as Set
 import Test.Tasty (defaultMain, testGroup)
 import Test.Tasty.HUnit (assertEqual, testCase)
 
@@ -165,22 +166,22 @@ walkPathTest4 =
 
 constructWireVisitsTest1 =  -- no move
   testCase "constructWireVisits test 1" $ assertEqual []
-  []
+  Set.empty
   (constructWireVisits [])
 
 constructWireVisitsTest2 =  -- move, but nowhere
   testCase "constructWireVisits test 2" $ assertEqual []
-  []
+  Set.empty
   (constructWireVisits [ V2 0 0 ])
 
 constructWireVisitsTest3 =
   testCase "constructWireVisits test 3" $ assertEqual []
-  [ V2 1 0
-  , V2 2 0
-  , V2 3 0
-  , V2 3 (-1)
-  , V2 3 (-2)
-  ]
+  (Set.fromList [ V2 1 0
+                , V2 2 0
+                , V2 3 0
+                , V2 3 (-1)
+                , V2 3 (-2)
+                ])
   (constructWireVisits [ V2 3 0
                        , V2 0 (-2)
                        ])
