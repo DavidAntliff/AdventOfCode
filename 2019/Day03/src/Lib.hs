@@ -2,7 +2,7 @@
 
 module Lib where
 
-import Data.List (sortBy, intersect, elemIndex)
+import Data.List (sortBy, sort, intersect, elemIndex)
 import Data.Maybe (fromJust)
 import Debug.Trace
 
@@ -113,7 +113,7 @@ part2 ss =
       common = findCommonVisits swv1 swv2
       --f = trace ("common " ++ show (length $ coordinates $ common)) 0
       distances = calcDistances (coordinates wv1) (coordinates wv2) $ coordinates common
-      distance = head . (sortBy (flip compare)) $ distances
+      distance = head . sort $ distances
   in distance
 
 -- TODO - takes too long to run (12.5 minutes) and the answer is wrong
