@@ -8,6 +8,8 @@ import Data.List.Split (splitOn)
 import Data.Sequence (Seq(..), index)
 import qualified Data.Sequence as Seq
 
+import Debug.Trace (trace)
+
 type Program = (Seq Int, Int, [Int], [Int])  -- memory, program counter, input, output (reversed)
 
 -- Parameter Modes
@@ -16,7 +18,9 @@ type Program = (Seq Int, Int, [Int], [Int])  -- memory, program counter, input, 
 
 runProgram :: Program -> Program
 runProgram (mem, pc, input, output) =
-  let handler = case (loadImmediate mem pc) `mod` 100 of
+  let opcode = loadImmediate mem pc
+      --handler = case trace ("opcode " ++ show opcode) (opcode `mod` 100) of
+      handler = case opcode `mod` 100 of
                   1 -> runProgram . addInstruction
                   2 -> runProgram . multInstruction
                   3 -> runProgram . opcode3Instruction  -- read from input
@@ -25,23 +29,38 @@ runProgram (mem, pc, input, output) =
   in handler (mem, pc, input, output)
 
 loadPosition :: Seq Int -> Int -> Int
-loadPosition mem addr = mem `index` (mem `index` addr)
+loadPosition mem addr = loadImmediate mem (loadImmediate mem addr)
 
 loadImmediate :: Seq Int -> Int -> Int
 loadImmediate mem addr = mem `index` addr
 
--- decodeLoad :: Int -> (Seq Int -> Int -> Int)
--- decodeLoad opcode = loadPosition
+-- support up to 3 parameters
+decodeParamModes :: Int -> [Int]
+decodeParamModes opcode = map (flip mod 10) $ map (div opcode) [100, 1000, 10000]
+
+-- support Position (0) and Immediate (1) parameter modes
+loadParam :: Seq Int -> Int -> Int -> Int
+loadParam mem addr mode = case mode of
+                            0 -> loadPosition mem addr
+                            1 -> loadImmediate mem addr
 
 addInstruction :: Program -> Program
 addInstruction (mem, pc, input, output) =
-  let value = loadPosition mem (pc + 1) + loadPosition mem (pc + 2)
-  in (Seq.update (loadImmediate mem (pc + 3)) value mem, pc + 4, input, output)
+  let (pm1:pm2:_) = decodeParamModes $ loadImmediate mem pc
+      p1 = loadParam mem (pc + 1) pm1
+      p2 = loadParam mem (pc + 2) pm2
+      mem' = Seq.update (loadImmediate mem (pc + 3)) (p1 + p2) mem
+      pc' = pc + 4
+  in (mem', pc', input, output)
 
 multInstruction :: Program -> Program
 multInstruction (mem, pc, input, output) =
-  let value = loadPosition mem (pc + 1) * loadPosition mem (pc + 2)
-  in (Seq.update (loadImmediate mem (pc + 3)) value mem, pc + 4, input, output)
+  let (pm1:pm2:_) = decodeParamModes $ loadImmediate mem pc
+      p1 = loadParam mem (pc + 1) pm1
+      p2 = loadParam mem (pc + 2) pm2
+      mem' = Seq.update (loadImmediate mem (pc + 3)) (p1 * p2) mem
+      pc' = pc + 4
+  in (mem', pc', input, output)
 
 terminateInstruction :: Program -> Program
 terminateInstruction x = x
@@ -59,3 +78,6 @@ readMemory s = Seq.fromList $ (mapMaybe readMaybe :: [String] -> [Int]) $ splitO
 
 loadProgram :: [String] -> Program
 loadProgram s = (readMemory $ head s, 0, [], [])  -- single line of input
+
+setInput :: [Int] -> Program -> Program
+setInput input (mem, pc, _, output) = (mem, pc, input, output)
