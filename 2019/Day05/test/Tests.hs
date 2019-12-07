@@ -26,6 +26,8 @@ unitTests =
     , decodeParamModesTest2
     , loadParamTest1
     , loadParamTest2
+    , opcode4ImmediateTest
+    , opcode4PositionTest
     ]
 
 
@@ -113,3 +115,13 @@ loadParamTest2 =
   testCase "loadParam test 2" $ assertEqual []
   1
   (loadParam (Seq.fromList [3,2,1,0]) 2 1)
+
+opcode4ImmediateTest =
+  testCase "opcode4 immediate test" $ assertEqual []
+  (Seq.fromList [104, 0, 99], 2, [], [0])
+  (runProgram (Seq.fromList [104, 0, 99], 0, [], []))
+
+opcode4PositionTest =
+  testCase "opcode4 position test" $ assertEqual []
+  (Seq.fromList [4, 0, 99], 2, [], [4])
+  (runProgram (Seq.fromList [4, 0, 99], 0, [], []))

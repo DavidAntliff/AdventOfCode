@@ -49,7 +49,7 @@ addInstruction (mem, pc, input, output) =
   let (pm1:pm2:_) = decodeParamModes $ loadImmediate mem pc
       p1 = loadParam mem (pc + 1) pm1
       p2 = loadParam mem (pc + 2) pm2
-      mem' = Seq.update (loadImmediate mem (pc + 3)) (p1 + p2) mem
+      mem' = Seq.update (loadImmediate mem (pc + 3)) (p1 + p2) mem  -- never immediate
       pc' = pc + 4
   in (mem', pc', input, output)
 
@@ -58,20 +58,25 @@ multInstruction (mem, pc, input, output) =
   let (pm1:pm2:_) = decodeParamModes $ loadImmediate mem pc
       p1 = loadParam mem (pc + 1) pm1
       p2 = loadParam mem (pc + 2) pm2
-      mem' = Seq.update (loadImmediate mem (pc + 3)) (p1 * p2) mem
+      mem' = Seq.update (loadImmediate mem (pc + 3)) (p1 * p2) mem  -- never immediate
       pc' = pc + 4
   in (mem', pc', input, output)
 
 terminateInstruction :: Program -> Program
 terminateInstruction x = x
 
+-- store is never immediate
 opcode3Instruction :: Program -> Program
 opcode3Instruction (mem, pc, input, output) =
   (Seq.update (loadImmediate mem (pc + 1)) (head input) mem, pc + 2, tail input, output)
 
 opcode4Instruction :: Program -> Program
 opcode4Instruction (mem, pc, input, output) =
-  (mem, pc + 2, input, (loadPosition mem (pc + 1)) : output)
+  let (pm1:_) = decodeParamModes $ loadImmediate mem pc
+      p1 = loadParam mem (pc + 1) pm1
+      pc' = pc + 2
+      output' = p1 : output
+  in (mem, pc', input, output')
 
 readMemory :: String -> Seq Int
 readMemory s = Seq.fromList $ (mapMaybe readMaybe :: [String] -> [Int]) $ splitOn "," s
