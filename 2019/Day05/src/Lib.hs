@@ -25,6 +25,10 @@ runProgram (mem, pc, input, output) =
                   2 -> runProgram . multInstruction
                   3 -> runProgram . opcode3Instruction  -- read from input
                   4 -> runProgram . opcode4Instruction  -- write to output
+                  5 -> runProgram . jumpIfTrueInstruction
+                  6 -> runProgram . jumpIfFalseInstruction
+                  7 -> runProgram . lessThanInstruction
+                  8 -> runProgram . equalsInstruction
                   99 -> terminateInstruction
   in handler (mem, pc, input, output)
 
@@ -77,6 +81,42 @@ opcode4Instruction (mem, pc, input, output) =
       pc' = pc + 2
       output' = p1 : output
   in (mem, pc', input, output')
+
+jumpIfTrueInstruction :: Program -> Program
+jumpIfTrueInstruction (mem, pc, input, output) =
+  let (pm1:pm2:_) = decodeParamModes $ loadImmediate mem pc
+      p1 = loadParam mem (pc + 1) pm1
+      p2 = loadParam mem (pc + 2) pm2
+      pc' = if p1 /= 0 then p2 else pc + 3
+  in (mem, pc', input, output)
+
+jumpIfFalseInstruction :: Program -> Program
+jumpIfFalseInstruction (mem, pc, input, output) =
+  let (pm1:pm2:_) = decodeParamModes $ loadImmediate mem pc
+      p1 = loadParam mem (pc + 1) pm1
+      p2 = loadParam mem (pc + 2) pm2
+      pc' = if p1 == 0 then p2 else pc + 3
+  in (mem, pc', input, output)
+
+lessThanInstruction :: Program -> Program
+lessThanInstruction (mem, pc, input, output) =
+  let (pm1:pm2:_) = decodeParamModes $ loadImmediate mem pc
+      p1 = loadParam mem (pc + 1) pm1
+      p2 = loadParam mem (pc + 2) pm2
+      result = if p1 < p2 then 1 else 0
+      mem' = Seq.update (loadImmediate mem (pc + 3)) result mem  -- never immediate
+      pc' = pc + 4
+  in (mem', pc', input, output)
+
+equalsInstruction :: Program -> Program
+equalsInstruction (mem, pc, input, output) =
+  let (pm1:pm2:_) = decodeParamModes $ loadImmediate mem pc
+      p1 = loadParam mem (pc + 1) pm1
+      p2 = loadParam mem (pc + 2) pm2
+      result = if p1 == p2 then 1 else 0
+      mem' = Seq.update (loadImmediate mem (pc + 3)) result mem  -- never immediate
+      pc' = pc + 4
+  in (mem', pc', input, output)
 
 readMemory :: String -> Seq Int
 readMemory s = Seq.fromList $ (mapMaybe readMaybe :: [String] -> [Int]) $ splitOn "," s
