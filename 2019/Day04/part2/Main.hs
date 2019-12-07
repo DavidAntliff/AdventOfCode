@@ -1,5 +1,7 @@
 module Main where
 
-import Lib ()
+import Lib (part2)
 
-main = interact show
+main = do
+  putStrLn $ show part2
+
