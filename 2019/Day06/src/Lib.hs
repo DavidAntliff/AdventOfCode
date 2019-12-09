@@ -60,4 +60,49 @@ part1 ss =
   in num_orbits
 
 
+-- Find the path to YOU, length #YOU
+-- Find the path to SAN, length #SAN
+-- Find the common path to both, length #BOTH
+--
+-- Number of orbital transfers = (#YOU - #BOTH - 2) + (#SAN - #BOTH - 2) + 2
+-- (Add two because two transfers are required to get from YOU path to SAN path via last common node)
+-- (Subtract 2 for each path because we ignore YOU and SAN themselves, and we're counting edges not nodes)
+--
+-- e.g.
+--                           YOU
+--                          /
+--         G - H       J - K - L
+--        /           /
+-- COM - B - C - D - E - F
+--                \
+--                 I - SAN
+--
+-- Path to YOU: ["COM", "B", "C", "D", "E", "J", "K", "YOU"], length 8
+-- Path to SAN: ["COM", "B", "C", "D", "I", "SAN"], length 6
+-- Common path: ["COM", "B", "C", "D"], length 4
+--
+-- Therefore number of transfers = (8 - 4 - 1 - 1) + (6 - 4 - 1 - 1) + 2 = 4
 
+part2 :: [String] -> Int
+part2 ss =
+  let tree = toMap $ readInput ss
+      pathYou = pathTo "COM" "YOU" tree
+      pathSan = pathTo "COM" "SAN" tree
+      pathBoth = map fst $ takeWhile (\(x, y) -> x == y) $ zip pathYou pathSan  -- common prefix
+      lengthBoth = length pathBoth
+  in (length pathYou - lengthBoth - 2) + (length pathSan - lengthBoth - 2) + 2
+
+-- return a path of keys to get from one node to another, inclusive
+-- use pre-order DFS
+pathTo :: String -> String -> Map String [String] -> [String]
+pathTo from to m
+  | from == to = [to]
+  | otherwise = case Map.lookup from m of
+                  Just value -> tryChildren from to m value
+                  Nothing -> []
+
+tryChildren :: String -> String -> Map String [String] -> [String] -> [String]
+tryChildren from to m [] = []
+tryChildren from to m (x:xs) =
+  let attempt = (pathTo x to m)
+  in if attempt /= [] then from:attempt else tryChildren from to m xs

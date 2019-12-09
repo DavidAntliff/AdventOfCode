@@ -1,5 +1,6 @@
 module Main where
 
-import Lib ()
+import Lib
 
-main = interact show
+main = interact $ show . part2 . lines
+

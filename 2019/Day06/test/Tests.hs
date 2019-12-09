@@ -27,6 +27,8 @@ unitTests =
     , depthTreeTest3
     , readInputTest1
     , countOrbitsTest1
+    , pathToTest1
+    , pathToTest2
     ]
 
 tree1 = Tree 0 [ Tree 1 [ Tree 10 [] ]
@@ -65,6 +67,30 @@ tree_ex1_input = [ "COM)B"
                  , "E)J"
                  , "J)K"
                  , "K)L" ]
+
+--                           YOU
+--                          /
+--         G - H       J - K - L
+--        /           /
+-- COM - B - C - D - E - F
+--                \
+--                 I - SAN
+--
+tree_ex2_input = [ "COM)B"
+                 , "B)C"
+                 , "C)D"
+                 , "D)E"
+                 , "E)F"
+                 , "B)G"
+                 , "G)H"
+                 , "D)I"
+                 , "E)J"
+                 , "J)K"
+                 , "K)L"
+                 , "K)YOU"
+                 , "I)SAN" ]
+
+tree_ex2 = toMap $ readInput tree_ex2_input
 
 countNodesTest1 =
   testCase "countNodes test 1" $ assertEqual []
@@ -148,3 +174,13 @@ countOrbitsTest1 =
   testCase "countOrbits test 1" $ assertEqual []
   (42)
   (countOrbits 0 (toMap $ readInput tree_ex1_input) "COM")
+
+pathToTest1 =
+  testCase "pathTo test 1" $ assertEqual []
+  (["COM", "B", "C", "D", "E", "J", "K", "YOU"])
+  (pathTo "COM" "YOU" tree_ex2)
+
+pathToTest2 =
+  testCase "pathTo test 2" $ assertEqual []
+  (["COM", "B", "C", "D", "I", "SAN"])
+  (pathTo "COM" "SAN" tree_ex2)
