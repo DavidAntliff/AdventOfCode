@@ -23,12 +23,12 @@ runProgram :: Program -> Program
 runProgram (mem, pc, input, output, state) =
   let opcode = loadImmediate mem pc
       handler = case
-        trace ("pc " ++ show pc ++ ", opcode " ++ show opcode)
+        --trace ("pc " ++ show pc ++ ", opcode " ++ show opcode)
         (opcode `mod` 100) of
                   1 -> addInstruction
                   2 -> multInstruction
-                  3 -> opcode3Instruction  -- read from input
-                  4 -> opcode4Instruction  -- write to output
+                  3 -> inputInstruction  -- read from input
+                  4 -> outputInstruction  -- write to output
                   5 -> jumpIfTrueInstruction
                   6 -> jumpIfFalseInstruction
                   7 -> lessThanInstruction
@@ -43,6 +43,7 @@ runProgram (mem, pc, input, output, state) =
 loadPosition :: Seq Int -> Int -> Int
 loadPosition mem addr = loadImmediate mem (loadImmediate mem addr)
 
+-- "parameters that an instruction writes to will never be in intermediate mode" - Day 5
 loadImmediate :: Seq Int -> Int -> Int
 loadImmediate mem addr = mem `index` addr
 
@@ -78,22 +79,22 @@ terminateInstruction :: Program -> Program
 terminateInstruction (mem, pc, input, output, state) = (mem, pc, input, output, Terminated)
 
 -- take input value from head of input list
--- store is never immediate
-opcode3Instruction :: Program -> Program
-opcode3Instruction (mem, pc, [], output, state) = (mem, pc, [], output, Blocked)
-opcode3Instruction (mem, pc, input, output, state) =
-  trace ("input " ++ show (head input))
+-- (store is never immediate)
+inputInstruction :: Program -> Program
+inputInstruction (mem, pc, [], output, state) = (mem, pc, [], output, Blocked)
+inputInstruction (mem, pc, input, output, state) =
+  --trace ("input " ++ show (head input))
   (Seq.update (loadImmediate mem (pc + 1)) (head input) mem, pc + 2, tail input, output, state)
 
 -- add output value to head of output list
-opcode4Instruction :: Program -> Program
-opcode4Instruction (mem, pc, input, output, state) =
+outputInstruction :: Program -> Program
+outputInstruction (mem, pc, input, output, state) =
   let (pm1:_) = decodeParamModes $ loadImmediate mem pc
       p1 = loadParam mem (pc + 1) pm1
       pc' = pc + 2
       output' = p1 : output
   in
-    trace ("output " ++ show p1)
+    --trace ("output " ++ show p1)
     (mem, pc', input, output', state)
 
 jumpIfTrueInstruction :: Program -> Program
@@ -194,22 +195,34 @@ part2 ss =
 -- and return the final value from the fifth amp
 runFeedback :: Program -> [Int] -> Int
 runFeedback program phases =
-  let amps0 = trace ("phases " ++ show phases) (initAmps program phases)
-      amps0' = executeChain amps0 0
-      amps1' = executeChain amps0' (getFinalOutput amps0')
-      amps2' = executeChain amps1' (getFinalOutput amps1')
-      amps3' = executeChain amps2' (getFinalOutput amps2')
-      amps4' = executeChain amps3' (getFinalOutput amps3')
-      amps5' = executeChain amps4' (getFinalOutput amps4')
-      amps6' = executeChain amps5' (getFinalOutput amps5')
-      amps7' = executeChain amps6' (getFinalOutput amps6')
-      amps8' = executeChain amps7' (getFinalOutput amps7')
-      amps9' = executeChain amps8' (getFinalOutput amps8')
-      amps10' = executeChain amps9' (getFinalOutput amps9')
-      thrusters = getFinalOutput amps9'
+  let amps = trace ("phases " ++ show phases) (initAmps program phases)
+      amps' = executeChain amps 0
+      amps'' = runFeedbackUntilTerminated amps'
+      thrusters = getFinalOutput amps''
+      -- amps1' = executeChain amps' (getFinalOutput amps')
+      -- amps2' = executeChain amps1' (getFinalOutput amps1')
+      -- amps3' = executeChain amps2' (getFinalOutput amps2')
+      -- amps4' = executeChain amps3' (getFinalOutput amps3')
+      -- amps5' = executeChain amps4' (getFinalOutput amps4')
+      -- amps6' = executeChain amps5' (getFinalOutput amps5')
+      -- amps7' = executeChain amps6' (getFinalOutput amps6')
+      -- amps8' = executeChain amps7' (getFinalOutput amps7')
+      -- amps9' = executeChain amps8' (getFinalOutput amps8')
+      -- amps10' = executeChain amps9' (getFinalOutput amps9')
+      -- thrusters = getFinalOutput amps9'
   in
     trace ("thrusters " ++ show thrusters)
     thrusters
+
+state :: Program -> State
+state (_, _, _, _, state) = state
+
+runFeedbackUntilTerminated :: [Program] -> [Program]
+runFeedbackUntilTerminated amps =
+  if (state $ last amps) /= Terminated then
+    runFeedbackUntilTerminated $ executeChain amps (getFinalOutput amps)
+  else
+    amps
 
 getFinalOutput :: [Program] -> Int
 getFinalOutput amps =
