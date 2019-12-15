@@ -34,6 +34,7 @@ runProgram (mem, pc, input, output, state) =
                   7 -> lessThanInstruction
                   8 -> equalsInstruction
                   99 -> terminateInstruction
+                  _ -> error ("Unhandled opcode " ++ show opcode)
       program' = handler (mem, pc, input, output, state)
   in case state of
     Running -> runProgram program'
@@ -56,6 +57,7 @@ loadParam :: Seq Int -> Int -> Int -> Int
 loadParam mem addr mode = case mode of
                             0 -> loadPosition mem addr
                             1 -> loadImmediate mem addr
+                            _ -> error ("Unhandled parameter mode " ++ show mode)
 
 addInstruction :: Program -> Program
 addInstruction (mem, pc, input, output, state) =
@@ -76,12 +78,12 @@ multInstruction (mem, pc, input, output, state) =
   in (mem', pc', input, output, state)
 
 terminateInstruction :: Program -> Program
-terminateInstruction (mem, pc, input, output, state) = (mem, pc, input, output, Terminated)
+terminateInstruction (mem, pc, input, output, _) = (mem, pc, input, output, Terminated)
 
 -- take input value from head of input list
 -- (store is never immediate)
 inputInstruction :: Program -> Program
-inputInstruction (mem, pc, [], output, state) = (mem, pc, [], output, Blocked)
+inputInstruction (mem, pc, [], output, _) = (mem, pc, [], output, Blocked)
 inputInstruction (mem, pc, input, output, state) =
   --trace ("input " ++ show (head input))
   (Seq.update (loadImmediate mem (pc + 1)) (head input) mem, pc + 2, tail input, output, state)
@@ -141,11 +143,11 @@ loadProgram s = (readMemory $ head s, 0, [], [], Running)  -- single line of inp
 
 -- replace the input list with the new list, clear Blocked state
 setInput :: [Int] -> Program -> Program
-setInput input (mem, pc, _, output, state) = (mem, pc, input, output, Running)
+setInput input (mem, pc, _, output, _) = (mem, pc, input, output, Running)
 
 -- add new input value to the end of the input list, clear Blocked state
 addInput :: Int -> Program -> Program
-addInput new_input (mem, pc, input, output, state) = (mem, pc, input ++ [new_input], output, Running)
+addInput new_input (mem, pc, input, output, _) = (mem, pc, input ++ [new_input], output, Running)
 
 
 -- Day 07
@@ -214,12 +216,12 @@ runFeedback program phases =
     trace ("thrusters " ++ show thrusters)
     thrusters
 
-state :: Program -> State
-state (_, _, _, _, state) = state
+getState :: Program -> State
+getState (_, _, _, _, state) = state
 
 runFeedbackUntilTerminated :: [Program] -> [Program]
 runFeedbackUntilTerminated amps =
-  if (state $ last amps) /= Terminated then
+  if (getState $ last amps) /= Terminated then
     runFeedbackUntilTerminated $ executeChain amps (getFinalOutput amps)
   else
     amps
@@ -235,7 +237,7 @@ executeChain amps input =
       amp1'@(_,_,_,out1,_) = runAmp2 (amps !! 1) (head out0)
       amp2'@(_,_,_,out2,_) = runAmp2 (amps !! 2) (head out1)
       amp3'@(_,_,_,out3,_) = runAmp2 (amps !! 3) (head out2)
-      amp4'@(_,_,_,out4,_) = runAmp2 (amps !! 4) (head out3)
+      amp4' = runAmp2 (amps !! 4) (head out3)
   in [amp0', amp1', amp2', amp3', amp4']
 
 
