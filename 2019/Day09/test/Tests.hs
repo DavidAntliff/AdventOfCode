@@ -60,6 +60,15 @@ unitTests =
     , relBaseInitTest
     , relBaseIncTest
     , relBaseDecTest
+    , loadRelativeTest1
+    , loadRelativeTest2
+    , relAddInstructionTest1
+    , relAddInstructionTest2
+    , relMultInstructionTest
+    , relInputInstructionTest
+    , relLessThanInstructionTest
+    , relEqualsInstructionTest
+    , quineTest
     ]
 
 
@@ -141,12 +150,12 @@ decodeParamModesTest2 =
 loadParamTest1 =
   testCase "loadParam test 1" $ assertEqual []
   2
-  (loadParam (Seq.fromList [3,2,1,0]) 2 0)
+  (loadParam (Seq.fromList [3,2,1,0]) 2 0 0)
 
 loadParamTest2 =
   testCase "loadParam test 2" $ assertEqual []
   1
-  (loadParam (Seq.fromList [3,2,1,0]) 2 1)
+  (loadParam (Seq.fromList [3,2,1,0]) 2 0 1)
 
 outputImmediateTest =
   testCase "output immediate test" $ assertEqual []
@@ -308,7 +317,7 @@ extendMemoryTest2 =
 relBaseInitTest =
   testCase "relbase initialised to zero test" $ assertEqual []
   (0)
-  (getRelBase $ loadProgram ["3,2,0"])
+  (getRelBase $ loadProgram "3,2,0")
 
 relBaseIncTest =
   testCase "relbase increases test" $ assertEqual []
@@ -319,4 +328,51 @@ relBaseDecTest =
   testCase "relbase decreases test" $ assertEqual []
   (-9400)
   (getRelBase $ adjustRelbaseInstruction (Seq.fromList [9, 3, 99, (-9456)], 0, 56, [], [], Running))
+
+loadRelativeTest1 =
+  testCase "loadRelative test 1" $ assertEqual []
+  (2)
+  (loadRelative (Seq.fromList [1,2,3,4]) 0 0)
+
+loadRelativeTest2 =
+  testCase "loadRelative test 2" $ assertEqual []
+  (4)
+  (loadRelative (Seq.fromList [1,2,3,4]) 1 1)
+
+relAddInstructionTest1 =
+  testCase "addInstruction with relative mode test 1" $ assertEqual []
+  (Seq.fromList [2201, 2, 3, 7, 99, 5, 6, 11], 4, 3, [], [], Running)
+  (addInstruction (Seq.fromList [2201, 2, 3, 7, 99, 5, 6, 0], 0, 3, [], [], Running))
+
+relAddInstructionTest2 =
+  testCase "addInstruction with relative mode test 2 " $ assertEqual []
+  (Seq.fromList [22201, 2, 3, 7, 99, 5, 6, 0, 0, 0, 11], 4, 3, [], [], Running)
+  (addInstruction (Seq.fromList [22201, 2, 3, 7, 99, 5, 6, 0, 0, 0, 0], 0, 3, [], [], Running))
+
+relMultInstructionTest =
+  testCase "multInstruction with relative mode test" $ assertEqual []
+  (Seq.fromList [21102, 2, 3, 5, 99, 6], 4, 0, [], [], Running)
+  (multInstruction (Seq.fromList [21102, 2, 3, 5, 99, 0], 0, 0, [], [], Running))
+
+relInputInstructionTest =
+  testCase "inputInstruction with relative mode test" $ assertEqual []
+  (Seq.fromList [203, (-3), 17], 2, 5, [], [], Running)
+  (inputInstruction (Seq.fromList [203, (-3), 0], 0, 5, [17], [], Running))
+
+relLessThanInstructionTest =
+  testCase "lessThanInstruction with relative mode true test" $ assertEqual []
+  (Seq.fromList [21107, 0, 1, 1, 1], 4, 3, [], [], Running)
+  (lessThanInstruction (Seq.fromList [21107, 0, 1, 1, (-1)], 0, 3, [], [], Running))
+
+relEqualsInstructionTest =
+  testCase "equalsInstruction with relative mode true test" $ assertEqual []
+  (Seq.fromList [1208, 7, 1, 4, 1], 4, (-5), [], [], Running)
+  (equalsInstruction (Seq.fromList [1208, 7, 1, 4, (-1)], 0, (-5), [], [], Running))
+
+quineTest =
+  testCase "replicate test program" $
+  let input = [109,1,204,(-1),1001,100,1,100,1008,100,16,101,1006,101,0,99]
+  in assertEqual []
+     (reverse input)
+     (getOutput $ runProgram $ extendMemory 1000 $ (Seq.fromList input, 0, 0, [], [], Running))
 
