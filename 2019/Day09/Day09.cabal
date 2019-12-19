@@ -1,0 +1,75 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.31.2.
+--
+-- see: https://github.com/sol/hpack
+--
+-- hash: de894040c81414c4eb325538a11b609b809253e502a59b6a02d74ccf333bb587
+
+name:           Day09
+version:        0.1.0.0
+homepage:       https://github.com/DavidAntliff/AdventOfCode/2019/Day09#readme
+bug-reports:    https://github.com/DavidAntliff/AdventOfCode/2019/Day09/issues
+author:         David Antliff
+maintainer:     David Antliff
+copyright:      2019 David Antliff
+license:        BSD3
+build-type:     Simple
+
+source-repository head
+  type: git
+  location: https://github.com/DavidAntliff/AdventOfCode/2019/Day09
+
+library
+  exposed-modules:
+      Lib
+  other-modules:
+      Paths_Day09
+  hs-source-dirs:
+      src
+  build-depends:
+      base >=4.7 && <5
+    , containers
+    , split
+  default-language: Haskell2010
+  ghc-options: -Wall
+
+executable part1
+  main-is: Main.hs
+  other-modules:
+      Paths_Day09
+  hs-source-dirs:
+      part1
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      Day09
+    , base >=4.7 && <5
+  default-language: Haskell2010
+
+executable part2
+  main-is: Main.hs
+  other-modules:
+      Paths_Day09
+  hs-source-dirs:
+      part2
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      Day09
+    , base >=4.7 && <5
+  default-language: Haskell2010
+
+test-suite test
+  type: exitcode-stdio-1.0
+  main-is: Tests.hs
+  other-modules:
+      Paths_Day09
+  hs-source-dirs:
+      test
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      Day09
+    , containers
+    , base
+    , tasty
+    , tasty-hunit
+  default-language: Haskell2010
