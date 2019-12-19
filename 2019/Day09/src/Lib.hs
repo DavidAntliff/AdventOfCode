@@ -222,5 +222,8 @@ part1 ss =
 
 part2 :: [String] -> Int
 part2 ss =
-  let program = loadProgram $ head ss
-  in 0
+  let program = extendMemory 10240 $ loadProgram $ head ss
+      program' = setInput [2] program
+      final = runProgram program'
+      output = trace (show final) (getOutput final)
+  in head output
