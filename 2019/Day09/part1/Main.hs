@@ -2,4 +2,4 @@ module Main where
 
 import Lib
 
-main = interact $ show . part1 . lines
+main = interact $ (++ "\n") . show . part1 . lines
