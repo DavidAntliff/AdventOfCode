@@ -2,7 +2,7 @@ module Lib where
 
 import Data.List.Split (chunksOf)
 import Data.Function (on)
-import Data.List (minimumBy)
+import Data.List (minimumBy, intercalate)
 
 -- input is 15,000 characters in length,
 -- image is 25 x 6 = 150 characters,
@@ -47,6 +47,25 @@ get3rd :: (a, b, c) -> c
 get3rd (_, _, c) = c
 
 -- Part 2
-part2 :: [String] -> Int
-part2 ss = 0
+part2 :: [String] -> String
+part2 ss =
+  let image_data = head ss
+      layers = chunksOf image_length image_data
+      image = applyLayers layers
+      result = render image
+  in result
 
+
+-- For each pixel, start with the top layer, and take
+-- the first non-"2" pixel (transparent) encountered.
+-- This is the colour of that pixel.
+applyLayers :: [String] -> String
+applyLayers layers = take 150 $ repeat '0'
+
+
+-- format layer to width x height
+render :: String -> String
+render s =
+  let rows = chunksOf image_width s
+      rows' = intercalate "\n" rows
+  in rows'
