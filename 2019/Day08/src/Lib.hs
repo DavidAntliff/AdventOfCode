@@ -2,7 +2,7 @@ module Lib where
 
 import Data.List.Split (chunksOf)
 import Data.Function (on)
-import Data.List (minimumBy, intercalate)
+import Data.List (minimumBy, intercalate, transpose)
 
 -- input is 15,000 characters in length,
 -- image is 25 x 6 = 150 characters,
@@ -60,12 +60,27 @@ part2 ss =
 -- the first non-"2" pixel (transparent) encountered.
 -- This is the colour of that pixel.
 applyLayers :: [String] -> String
-applyLayers layers = take 150 $ repeat '0'
+--applyLayers layers = take 150 $ repeat '0'
+applyLayers layers =
+  let t = transpose layers
+  in map getPixel t
 
+-- given a string of characters, return the first character that is not '2'
+getPixel :: String -> Char
+getPixel s = last $ takeUntil (/= '2') s
+
+-- Construct list of items from a foldable until condition is true.
+-- Final list will contain the first true item.
+takeUntil :: Foldable t => (a -> Bool) -> t a -> [a]
+takeUntil p = foldr (\x r -> if (not (p x)) then (x:r) else [x]) []
 
 -- format layer to width x height
 render :: String -> String
 render s =
   let rows = chunksOf image_width s
-      rows' = intercalate "\n" rows
-  in rows'
+      rows' = map renderRow rows
+      rows'' = intercalate "\n" rows'
+  in rows''
+
+renderRow :: String -> String
+renderRow = map (\c -> if c == '0' then ' ' else '#')
