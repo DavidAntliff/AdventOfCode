@@ -4,6 +4,12 @@
 
 Use `stack` to manage ghc and installed packages. Use `package.yaml` or `Project.cabal` but not both.
 
+View the dependency tree:
+
+```bash
+$ stack dot --external | dot -Tpng | feh -
+```
+
 ## Imports
 
 Often importing a standard package needs two imports, one to bring in the useful name of the data structure,
